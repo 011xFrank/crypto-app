@@ -1,0 +1,8 @@
+{
+  "name": "cryptoke",
+  "private": true,
+  "scripts": {
+    "start": "php -S 0.0.0.0:3000",
+    "build": "echo 'PHP project — no build step required'"
+  }
+}
