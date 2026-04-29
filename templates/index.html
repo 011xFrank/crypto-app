@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CryptoKE &mdash; Buy Crypto in Kenya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <section class="section rates" id="rates">
+      <div class="container">
+        <div class="section__header">
+          <h2>Live Rates</h2>
+          <p>Prices updated in real-time &middot; 5% service fee included</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert--error">{{ error }}</div>
+        {% endif %}
+
+        <div class="rates__grid">
+          {% for id, info in coins.items() %}
+          {% set p = prices.get(id) %}
+          {% if p %}
+          {% set changeClass = 'up' if p.change24h >= 0 else 'down' %}
+          {% set changeSign = '+' if p.change24h >= 0 else '' %}
+
+          <div class="rate-card" data-coin="{{ id }}" onclick="selectCoin('{{ id }}')">
+            <div class="rate-card__top">
+              <img src="{{ info.icon }}" alt="{{ info.symbol }}" class="rate-card__icon" loading="lazy" />
+              <div>
+                <div class="rate-card__name">{{ info.name }}</div>
+                <div class="rate-card__symbol">{{ info.symbol }}</div>
+              </div>
+              <div class="rate-card__change {{ changeClass }}">
+                {{ changeSign }}{{ "%.2f"|format(p.change24h) }}%
+              </div>
+            </div>
+            <div class="rate-card__price">
+              KES {{ "{:,.2f}".format(p.kes_ours) if p.kes_ours >= 1000 else "{:,.4f}".format(p.kes_ours) }}
+            </div>
+            <div class="rate-card__sub">per 1 {{ info.symbol }}</div>
+            <button class="btn btn--buy" onclick="selectCoin('{{ id }}'); event.stopPropagation();">
+              Buy {{ info.symbol }}
+            </button>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="section buy" id="buy">
+      <div class="container">
+        <div class="section__header">
+          <h2>Place Your Order</h2>
+          <p>Fill in the form to complete the purchase via WhatsApp</p>
+        </div>
+        <div class="buy__wrap">
+          <form method="POST" action="/" class="buy-form" id="buyForm">
+            <div class="form-group">
+              <label for="coin">Select Cryptocurrency</label>
+              <div class="select-wrap">
+                <select name="coin" id="coin" required onchange="updateTotal()">
+                  <option value="">-- Choose a coin --</option>
+                  {% for id, info in coins.items() %}
+                  {% set p = prices.get(id) %}
+                  {% if p %}
+                  <option value="{{ id }}" data-price="{{ p.kes_ours }}" data-symbol="{{ info.symbol }}">
+                    {{ info.name }} ({{ info.symbol }}) &mdash; KES {{ "{:,.2f}".format(p.kes_ours) }}
+                  </option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="amount">Amount to Buy</label>
+              <div class="input-with-tag">
+                <input type="number" name="amount" id="amount" min="0.000001" step="any" placeholder="e.g. 0.01" required oninput="updateTotal()" />
+                <span class="input-tag" id="symbolTag">COIN</span>
+              </div>
+            </div>
+
+            <div class="form-group total-box" id="totalBox" style="display: none">
+              <div class="total-box__label">Total Cost</div>
+              <div class="total-box__value" id="totalValue">KES 0.00</div>
+              <div class="total-box__note">Includes 5% service fee</div>
+            </div>
+
+            <div class="form-group">
+              <label for="buyer_name">Your Name</label>
+              <input type="text" name="buyer_name" id="buyer_name" placeholder="John Doe" required />
+            </div>
+
+            <div class="form-group">
+              <label for="wallet">Your Wallet Address <span class="optional">(Optional)</span></label>
+              <input type="text" name="wallet" id="wallet" placeholder="Your crypto wallet address" />
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--full">
+              <span class="btn__wa-icon">&#128172;</span> Continue to WhatsApp
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="logo">
+          <span class="logo__icon">&#9889;</span>
+          <span class="logo__text">CryptoKE</span>
+        </div>
+        <p class="footer__note">
+          Prices via CoinGecko &middot; KES rate: {{ kes_rate }}/USD &middot; +5% fee
+        </p>
+      </div>
+    </footer>
+
+    <script>
+    // Keep your existing JavaScript here exactly as it was
+    </script>
+  </body>
+</html>
