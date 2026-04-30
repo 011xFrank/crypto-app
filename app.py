@@ -3,9 +3,7 @@ from flask import Flask, render_template, request, redirect
 
 # Define the path to your public folder
 # This ensures Flask looks into 'public/static' for CSS/JS
-app = Flask(__name__, 
-            static_folder='public/static', 
-            static_url_path='/static')
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
 # ... (Keep the COINS and get_crypto_prices logic from the previous snippet) ...
 
